@@ -15,7 +15,6 @@
 static int	init_philo(t_sim *sim, int i)
 {
 	t_philo	*philo;
-	char	*sem_name;
 
 	philo = malloc(sizeof(t_philo));
 	if (!philo)
@@ -24,18 +23,7 @@ static int	init_philo(t_sim *sim, int i)
 	philo->meals_eaten = 0;
 	philo->last_meal = sim->start_time;
 	philo->sim = sim;
-	sem_name = get_sem_meal_name(philo->id);
-	if (!sem_name)
-		return (error_exit(sim, philo, ERR_6));
-	sem_unlink(sem_name);
-	philo->sem_meal = sem_open(sem_name, O_CREAT | O_EXCL, 0666, 1);
-	if (philo->sem_meal == SEM_FAILED)
-	{
-		free(sem_name);
-		return (error_exit(sim, philo, ERR_7));
-	}
-	sem_unlink(sem_name);
-	free(sem_name);
+	init_philo_semaphore(philo);
 	routine(philo);
 	exit(3);
 }
@@ -62,34 +50,6 @@ int	create_children(t_sim *sim)
 	return (1);
 }
 
-static int	init_semaphores(t_sim *sim)
-{
-	sem_unlink("/sem_forks");
-	sem_unlink("/sem_print");
-	sem_unlink("/sem_over");
-	sim->sem_forks = sem_open("/sem_forks", O_CREAT | O_EXCL, 0666,
-		sim->philo_count);
-	if (sim->sem_forks == SEM_FAILED)
-		return (0);
-	sim->sem_print = sem_open("/sem_print", O_CREAT | O_EXCL, 0666, 1);
-	if (sim->sem_print == SEM_FAILED)
-	{
-		sem_unlink("/sem_forks");
-		return (0);
-	}
-	sim->sem_over = sem_open("/sem_over", O_CREAT | O_EXCL, 0666, 1);
-	if (sim->sem_over == SEM_FAILED)
-	{
-		sem_unlink("/sem_forks");
-		sem_unlink("/sem_print");
-		return (0);
-	}
-	sem_unlink("/sem_forks");
-	sem_unlink("/sem_print");
-	sem_unlink("/sem_over");
-	return (1);
-}
-
 int	init_config(t_sim *sim, int argc, char **argv)
 {
 	sim->philo_count = ft_atol(argv[1]);
@@ -100,7 +60,7 @@ int	init_config(t_sim *sim, int argc, char **argv)
 	sim->required_meals = -1;
 	if (argc == 6)
 		sim->required_meals = ft_atol(argv[5]);
-	if (!init_semaphores(sim))
+	if (!init_sim_semaphores(sim))
 		return (error_exit(sim, NULL, ERR_3));
 	return (1);
 }

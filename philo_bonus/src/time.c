@@ -24,10 +24,10 @@ long	get_time_ms(void)
 void	sleep_ms(long msec)
 {
 	long	start;
-	
+
 	if (msec <= 0)
 		return ;
 	start = get_time_ms();
 	while (get_time_ms() - start < msec)
-		usleep(1000);
+		usleep(500);
 }

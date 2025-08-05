@@ -51,9 +51,9 @@ static int	take_forks(t_philo *philo)
 static void	wait_to_be_served(t_philo *philo)
 {
 	if (philo->id % 2 == 0)
-		sleep_ms(philo->sim->time_to_eat);
-	else
 		sleep_ms(philo->sim->time_to_eat / 2);
+	else
+		sleep_ms(1);
 }
 
 void	routine(t_philo *philo)
@@ -65,8 +65,8 @@ void	routine(t_philo *philo)
 		if (!take_forks(philo))
 			break ;
 		eat(philo);
-		if (philo->sim->required_meals > 0 &&
-			philo->meals_eaten >= philo->sim->required_meals)
+		if (philo->sim->required_meals > 0
+			&& philo->meals_eaten >= philo->sim->required_meals)
 		{
 			clean_philo(philo);
 			exit(0);

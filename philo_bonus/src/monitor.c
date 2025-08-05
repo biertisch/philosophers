@@ -14,7 +14,7 @@
 
 void	*monitor_end(void *arg)
 {
-	t_philo *philo;
+	t_philo	*philo;
 
 	philo = (t_philo *)arg;
 	sem_wait(philo->sim->sem_over);
@@ -24,7 +24,7 @@ void	*monitor_end(void *arg)
 
 void	*monitor_death(void *arg)
 {
-	t_philo *philo;
+	t_philo	*philo;
 
 	philo = (t_philo *)arg;
 	while (1)
@@ -45,14 +45,8 @@ void	*monitor_death(void *arg)
 int	create_monitor_threads(t_philo *philo)
 {
 	if (pthread_create(&philo->death_monitor, NULL, &monitor_death, philo) != 0)
-	{
-		sem_post(philo->sim->sem_over);
 		return (error_exit(philo->sim, philo, ERR_8));
-	}
 	if (pthread_detach(philo->death_monitor) != 0)
-	{
-		sem_post(philo->sim->sem_over);
 		return (error_exit(philo->sim, philo, ERR_9));
-	}
 	return (0);
 }

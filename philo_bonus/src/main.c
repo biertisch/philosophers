@@ -16,6 +16,7 @@ static void	wait_for_children(t_sim *sim)
 {
 	int	status;
 	int	satisfied;
+	int	i;
 
 	satisfied = 0;
 	while (waitpid(-1, &status, 0) > 0)
@@ -23,7 +24,14 @@ static void	wait_for_children(t_sim *sim)
 		if (WIFEXITED(status))
 		{
 			if (WEXITSTATUS(status) == 1)
-				sem_post(sim->sem_over);
+			{
+				i = 0;
+				while (i++ < sim->philo_count)
+					sem_post(sim->sem_over);
+				i = 0;
+				while (i++ < sim->philo_count)
+					sem_post(sim->sem_print);
+			}
 			if (WEXITSTATUS(status) == 0)
 				satisfied++;
 		}
@@ -44,5 +52,5 @@ int	main(int argc, char **argv)
 	wait_for_children(&sim);
 	clean_sim(&sim);
 	printf("End of simulation\n");
-	return (EXIT_SUCCESS);
+	return (0);
 }

@@ -48,7 +48,7 @@ typedef struct s_sim
 	sem_t	*sem_forks;
 	sem_t	*sem_print;
 	sem_t	*sem_over;
-	sem_t	*sem_dead;
+	int		sem_initialized;
 }			t_sim;
 
 typedef struct s_philo
@@ -60,17 +60,19 @@ typedef struct s_philo
 	pthread_t	death_monitor;
 	pthread_t	end_monitor;
 	t_sim		*sim;
+	int			sem_initialized;
 }				t_philo;
 
 int		validate_input(t_sim *sim, int argc, char **argv);
 long	ft_atol(const char *s);
 int		init_config(t_sim *sim, int argc, char **argv);
+int		init_sim_semaphores(t_sim *sim);
 int		create_children(t_sim *sim);
+int		init_philo_semaphore(t_philo *philo);
 void	routine(t_philo *philo);
 int		create_monitor_threads(t_philo *philo);
 void	*monitor_death(void *arg);
 void	*monitor_end(void *arg);
-char	*get_sem_meal_name(int philo_id);
 void	print_status(t_philo *philo, char *msg);
 void	sleep_ms(long msec);
 long	get_time_ms(void);

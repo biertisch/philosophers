@@ -16,7 +16,8 @@ void	clean_philo(t_philo *philo)
 {
 	if (!philo)
 		return ;
-	sem_close(philo->sem_meal);
+	if (philo->sem_initialized)
+		sem_close(philo->sem_meal);
 	free(philo);
 }
 
@@ -24,9 +25,16 @@ void	clean_sim(t_sim *sim)
 {
 	if (!sim)
 		return ;
-	sem_close(sim->sem_forks);
-	sem_close(sim->sem_print);
-	sem_close(sim->sem_over);
+	while (sim->sem_initialized)
+	{
+		if (sim->sem_initialized == 3)
+			sem_close(sim->sem_over);
+		else if (sim->sem_initialized == 2)
+			sem_close(sim->sem_print);
+		else if (sim->sem_initialized == 1)
+			sem_close(sim->sem_forks);
+		sim->sem_initialized--;
+	}
 	free(sim->philo_pid);
 	memset(sim, 0, sizeof(t_sim));
 }
@@ -46,5 +54,5 @@ int	error_exit(t_sim *sim, t_philo *philo, char *error_msg)
 	}
 	clean_sim(sim);
 	clean_philo(philo);
-	exit(EXIT_FAILURE);
+	exit(1);
 }

@@ -45,7 +45,7 @@ int	init_philos(t_sim *sim)
 			return (error_exit(sim, ERR_8));
 		sim->meal_mutexes_init++;
 		if (pthread_create(&sim->philos[i].thread, NULL, &routine,
-			&sim->philos[i]) != 0)
+				&sim->philos[i]) != 0)
 			return (error_exit(sim, ERR_8));
 		sim->threads_created++;
 		i++;
