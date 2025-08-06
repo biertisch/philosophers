@@ -12,17 +12,30 @@
 
 #include "../include/philo.h"
 
-void	*monitor_end(void *arg)
+void	set_status(t_philo *philo, int type)
 {
-	t_philo	*philo;
-
-	philo = (t_philo *)arg;
-	sem_wait(philo->sim->sem_over);
-	clean_philo(philo);
-	exit(2);
+	sem_wait(philo->sem_status);
+	if (type == STATUS_DEAD)
+		philo->dead = 1;
+	else
+		philo->satisfied = 1;
+	sem_post(philo->sem_status);
 }
 
-void	*monitor_death(void *arg)
+int	get_status(t_philo *philo, int type)
+{
+	int	status;
+	
+	sem_wait(philo->sem_status);
+	if (type == STATUS_DEAD)
+		status = philo->dead;
+	else
+		status = philo->satisfied;
+	sem_post(philo->sem_status);
+	return (status);
+}
+
+static void	*monitor_death(void *arg)
 {
 	t_philo	*philo;
 
@@ -31,22 +44,23 @@ void	*monitor_death(void *arg)
 	{
 		sem_wait(philo->sem_meal);
 		if (get_time_ms() - philo->last_meal >= philo->sim->time_to_die)
-		{
+		{	
+			sem_post(philo->sem_meal);
 			print_status(philo, "died");
-			clean_philo(philo);
-			exit(1);
+			set_status(philo, STATUS_DEAD);
+			break ;
 		}
 		sem_post(philo->sem_meal);
-		sleep_ms(1);
+		if (get_status(philo, STATUS_SATISFIED))
+			break ;
+		usleep(1000);
 	}
 	return (NULL);
 }
 
-int	create_monitor_threads(t_philo *philo)
+int	create_monitor_thread(t_philo *philo)
 {
-	if (pthread_create(&philo->death_monitor, NULL, &monitor_death, philo) != 0)
-		return (error_exit(philo->sim, philo, ERR_8));
-	if (pthread_detach(philo->death_monitor) != 0)
-		return (error_exit(philo->sim, philo, ERR_9));
+	if (pthread_create(&philo->monitor, NULL, &monitor_death, philo) != 0)
+		return (error_exit(philo->sim, ERR_6));
 	return (0);
 }

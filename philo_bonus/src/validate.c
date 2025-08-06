@@ -52,19 +52,19 @@ int	validate_input(t_sim *sim, int argc, char **argv)
 	long	tmp;
 
 	if (argc < 5 || argc > 6)
-		return (error_exit(sim, NULL, ERR_0));
+		return (error_exit(sim, ERR_0));
 	i = 1;
 	while (i < argc)
 	{
 		if (!is_numeric(argv[i]))
-			return (error_exit(sim, NULL, ERR_1));
+			return (error_exit(sim, ERR_1));
 		tmp = ft_atol(argv[i]);
 		if (i == 1 && (tmp < 1 || tmp > 200))
-			return (error_exit(sim, NULL, ERR_2));
+			return (error_exit(sim, ERR_2));
 		else if ((i >= 2 && i <= 4) && (tmp < 60 || tmp > INT_MAX))
-			return (error_exit(sim, NULL, ERR_2));
+			return (error_exit(sim, ERR_2));
 		else if (i == 5 && (tmp < 1 || tmp > INT_MAX))
-			return (error_exit(sim, NULL, ERR_2));
+			return (error_exit(sim, ERR_2));
 		i++;
 	}
 	return (1);

@@ -31,7 +31,7 @@ static void	eat(t_philo *philo)
 	print_status(philo, "is eating");
 	sleep_ms(philo->sim->time_to_eat);
 	sem_post(philo->sim->sem_forks);
-	sem_post(philo->sim->sem_forks);
+	sem_post(philo->sim->sem_forks);	
 }
 
 static int	take_forks(t_philo *philo)
@@ -58,21 +58,37 @@ static void	wait_to_be_served(t_philo *philo)
 
 void	routine(t_philo *philo)
 {
-	create_monitor_threads(philo);
+	create_monitor_thread(philo);
 	wait_to_be_served(philo);
 	while (1)
 	{
+		printf("Philo %d is dead? %d\n", philo->id, get_status(philo, STATUS_DEAD)); //debugging
+		if (get_status(philo, STATUS_DEAD))
+		{
+			printf("Philo %d detected as dead, exiting loop\n", philo->id); //debugging
+			break ;
+		}
 		if (!take_forks(philo))
 			break ;
 		eat(philo);
 		if (philo->sim->required_meals > 0
 			&& philo->meals_eaten >= philo->sim->required_meals)
 		{
-			clean_philo(philo);
-			exit(0);
+			set_status(philo, STATUS_SATISFIED);
+			break ;
 		}
 		print_status(philo, "is sleeping");
 		sleep_ms(philo->sim->time_to_sleep);
 		think_until_hungry(philo);
 	}
+
+	printf("Philo %d exiting routine; dead=%d satisfied=%d\n",
+       philo->id, philo->dead, philo->satisfied); //debugging
+
+	pthread_join(philo->monitor, NULL);
+	child_cleanup(philo);
+	if (philo->dead)
+		exit(1);
+	if (philo->satisfied)
+		exit(0);
 }

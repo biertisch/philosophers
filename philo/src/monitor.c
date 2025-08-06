@@ -12,6 +12,16 @@
 
 #include "../include/philo.h"
 
+int	stop_sim(t_sim *sim)
+{
+	int	status;
+
+	pthread_mutex_lock(&sim->sim_lock);
+	status = sim->sim_over;
+	pthread_mutex_unlock(&sim->sim_lock);
+	return (status);
+}
+
 static void	check_meal_completion(t_sim *sim)
 {
 	int		i;

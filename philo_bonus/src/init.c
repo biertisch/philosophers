@@ -12,20 +12,21 @@
 
 #include "../include/philo.h"
 
-static int	init_philo(t_sim *sim, int i)
+static void	launch_philo(t_sim *sim, int i)
 {
 	t_philo	*philo;
 
-	philo = malloc(sizeof(t_philo));
-	if (!philo)
-		return (error_exit(sim, philo, ERR_6));
+	philo = &sim->philos[i];
 	philo->id = i + 1;
 	philo->meals_eaten = 0;
 	philo->last_meal = sim->start_time;
+	philo->dead = 0;
+	philo->satisfied = 0;
+	philo->sem_meal = sim->sem_meal[i];
+	philo->sem_status = sim->sem_status[i];
 	philo->sim = sim;
-	init_philo_semaphore(philo);
 	routine(philo);
-	exit(3);
+	exit(2);
 }
 
 int	create_children(t_sim *sim)
@@ -33,22 +34,31 @@ int	create_children(t_sim *sim)
 	int		i;
 	pid_t	pid;
 
-	sim->philo_pid = malloc(sizeof(pid_t) * sim->philo_count);
-	if (!sim->philo_pid)
-		return (error_exit(sim, NULL, ERR_4));
 	i = 0;
 	while (i < sim->philo_count)
 	{
 		pid = fork();
 		if (pid == -1)
-			return (error_exit(sim, NULL, ERR_5));
+			return (error_exit(sim, ERR_5));
 		else if (pid == 0)
-			init_philo(sim, i);
+			launch_philo(sim, i);
 		sim->philo_pid[i] = pid;
 		i++;
 	}
 	return (1);
 }
+
+static int	allocate_memory(t_sim *sim)
+{
+	sim->philo_pid = malloc(sizeof(pid_t) * sim->philo_count);
+	sim->philos = malloc(sizeof(t_philo) * sim->philo_count);
+	sim->sem_meal = malloc(sizeof(sem_t *) * sim->philo_count);
+	sim->sem_status = malloc(sizeof(sem_t *) * sim->philo_count);
+	if (!sim->philo_pid || !sim->philos || !sim->sem_meal || !sim->sem_status)
+		return (0);
+	return (1);
+}
+
 
 int	init_config(t_sim *sim, int argc, char **argv)
 {
@@ -60,7 +70,9 @@ int	init_config(t_sim *sim, int argc, char **argv)
 	sim->required_meals = -1;
 	if (argc == 6)
 		sim->required_meals = ft_atol(argv[5]);
-	if (!init_sim_semaphores(sim))
-		return (error_exit(sim, NULL, ERR_3));
+	if (!allocate_memory(sim))
+		return (error_exit(sim, ERR_3));
+	if (!init_semaphores(sim))
+		return (error_exit(sim, ERR_4));
 	return (1);
 }

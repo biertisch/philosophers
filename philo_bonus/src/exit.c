@@ -12,34 +12,74 @@
 
 #include "../include/philo.h"
 
-void	clean_philo(t_philo *philo)
+void	wait_for_children(t_sim *sim)
 {
-	if (!philo)
-		return ;
-	if (philo->sem_initialized)
-		sem_close(philo->sem_meal);
-	free(philo);
+	int	status;
+	int	satisfied;
+	int	i;
+
+	satisfied = 0;
+	while (waitpid(-1, &status, 0) > 0)
+	{
+		if (WIFEXITED(status))
+		{
+			if (WEXITSTATUS(status) == 1)
+			{
+				i = 0;
+				while (i < sim->philo_count)
+					kill(sim->philo_pid[i++], SIGKILL);
+				break ;
+			}
+			if (WEXITSTATUS(status) == 0)
+				satisfied++;
+		}
+	}
+	if (satisfied == sim->philo_count)
+		printf("%ld All philosophers are satisfied\n",
+			get_time_ms() - sim->start_time);
 }
 
-void	clean_sim(t_sim *sim)
+void	child_cleanup(t_philo *philo)
 {
+	int	i;
+
+	i = 0;
+	while (i < philo->sim->philo_count)
+	{
+		sem_close(philo->sim->sem_meal[i]);
+		sem_close(philo->sim->sem_status[i++]);
+	}
+	sem_close(philo->sim->sem_print);
+	sem_close(philo->sim->sem_forks);
+}
+
+void	cleanup(t_sim *sim)
+{
+	int	i;
+
 	if (!sim)
 		return ;
-	while (sim->sem_initialized)
+	i = 0; 
+	while (i < sim->philo_count)
 	{
-		if (sim->sem_initialized == 3)
-			sem_close(sim->sem_over);
-		else if (sim->sem_initialized == 2)
-			sem_close(sim->sem_print);
-		else if (sim->sem_initialized == 1)
-			sem_close(sim->sem_forks);
-		sim->sem_initialized--;
-	}
+		if (sim->sem_meal && sim->sem_meal[i])
+			sem_close(sim->sem_meal[i]);
+		if (sim->sem_status && sim->sem_status[i])
+			sem_close(sim->sem_status[i]);
+		i++;
+    }
+	if (sim->sem_print)
+		sem_close(sim->sem_print);
+	if (sim->sem_forks)
+		sem_close(sim->sem_forks);
 	free(sim->philo_pid);
+	free(sim->philos);
+	free(sim->sem_meal);
+	free(sim->sem_status);
 	memset(sim, 0, sizeof(t_sim));
 }
 
-int	error_exit(t_sim *sim, t_philo *philo, char *error_msg)
+int	error_exit(t_sim *sim, char *error_msg)
 {
 	int	len;
 
@@ -52,7 +92,6 @@ int	error_exit(t_sim *sim, t_philo *philo, char *error_msg)
 		write(2, error_msg, len);
 		write(2, "\n", 1);
 	}
-	clean_sim(sim);
-	clean_philo(philo);
+	cleanup(sim);
 	exit(1);
 }

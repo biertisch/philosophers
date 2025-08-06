@@ -12,7 +12,7 @@
 
 #include "../include/philo.h"
 
-static size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 {
 	size_t	i;
 
@@ -29,62 +29,64 @@ static size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 	return (i);
 }
 
-static char	*get_sem_meal_name(int philo_id)
+static char	*get_philo_sem_name(char *base, int id)
 {
 	char	*name;
-	int		i;
+	int		base_len;
 
-	name = malloc(sizeof(char) * 14);
+	base_len = 0;
+	while (base[base_len])
+		base_len++;
+	name = malloc(sizeof(char) * (base_len + 4));
 	if (!name)
 		return (NULL);
-	ft_strlcpy(name, "/sem_meal_", 10);
-	i = 13;
-	name[i--] = '\0';
-	while (philo_id > 0 && i > 9)
-	{
-		name[i--] = (philo_id % 10) + '0';
-		philo_id /= 10;
-	}
-	while (i > 9)
-		name[i--] = '0';
+	ft_strlcpy(name, base, base_len + 4);
+	name[base_len] = (id / 100) % 10 + '0';
+	name[base_len + 1] = (id / 10) % 10 + '0';
+	name[base_len + 2] = id % 10 + '0';
+	name[base_len + 3] = '\0';
 	return (name);
 }
 
-static int	init_semaphore(sem_t **ptr, char *name, int value, int *counter)
+static int	init_semaphore(sem_t **ptr, char *name, int value)
 {
 	sem_unlink(name);
 	*ptr = sem_open(name, O_CREAT | O_EXCL, 0666, value);
 	if (*ptr == SEM_FAILED)
 		return (0);
-	(*counter)++;
 	return (1);
 }
 
-int	init_philo_semaphore(t_philo *philo)
+static int	init_philo_semaphore(char *base, sem_t **array, int i)
 {
 	char	*name;
+	int		ret;
 
-	name = get_sem_meal_name(philo->id);
+	name = get_philo_sem_name(base, i + 1);
 	if (!name)
-		return (error_exit(philo->sim, philo, ERR_6));
-	if (!init_semaphore(&philo->sem_meal, name, 1, &philo->sem_initialized))
-	{
-		free(name);
-		return (error_exit(philo->sim, philo, ERR_7));
-	}
+		return (0);
+	ret = init_semaphore(&array[i], name, 1);
 	free(name);
-	return (1);
+	name = NULL;
+	return (ret);
 }
 
-int	init_sim_semaphores(t_sim *sim)
+int	init_semaphores(t_sim *sim)
 {
-	if (!init_semaphore(&sim->sem_forks, "/sem_forks", sim->philo_count,
-			&sim->sem_initialized))
+	int	i;
+	
+	if (!init_semaphore(&sim->sem_forks, "/sem_forks", sim->philo_count))
 		return (0);
-	if (!init_semaphore(&sim->sem_print, "/sem_print", 1,
-			&sim->sem_initialized))
+	if (!init_semaphore(&sim->sem_print, "/sem_print", 1))
 		return (0);
-	if (!init_semaphore(&sim->sem_over, "/sem_over", 0, &sim->sem_initialized))
-		return (0);
+	i = 0;
+	while (i < sim->philo_count)
+	{
+		if (!init_philo_semaphore("/sem_meal_", sim->sem_meal, i))
+			return (0);
+		if (!init_philo_semaphore("/sem_status_", sim->sem_status, i))
+			return (0);
+		i++;
+	}
 	return (1);
 }
