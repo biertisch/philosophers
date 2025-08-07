@@ -20,7 +20,7 @@ static void	launch_philo(t_sim *sim, int i)
 	philo->id = i + 1;
 	philo->meals_eaten = 0;
 	philo->last_meal = sim->start_time;
-	philo->holding_fork = 0;
+	philo->holding_forks = 0;
 	philo->sim = sim;
 	routine(philo);
 	exit(2);
@@ -45,6 +45,20 @@ int	create_children(t_sim *sim)
 	return (1);
 }
 
+static int	init_semaphores(t_sim *sim)
+{
+	sem_unlink("/sem_forks");
+	sem_unlink("/sem_print");
+	sim->sem_forks = sem_open("/sem_forks", O_CREAT | O_EXCL, 0666,
+			sim->philo_count);
+	if (sim->sem_forks == SEM_FAILED)
+		return (0);
+	sim->sem_print = sem_open("/sem_print", O_CREAT | O_EXCL, 0666, 1);
+	if (sim->sem_print == SEM_FAILED)
+		return (0);
+	return (1);
+}
+
 static int	allocate_memory(t_sim *sim)
 {
 	sim->philo_pid = malloc(sizeof(pid_t) * sim->philo_count);
@@ -53,7 +67,6 @@ static int	allocate_memory(t_sim *sim)
 		return (0);
 	return (1);
 }
-
 
 int	init_config(t_sim *sim, int argc, char **argv)
 {

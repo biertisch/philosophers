@@ -12,35 +12,35 @@
 
 #include "../include/philo.h"
 
-void	wait_for_children(t_sim *sim)
+int	check_satisfaction(t_philo *philo)
 {
-	int	status;
-	int	satisfied;
-	int	i;
-
-	satisfied = 0;
-	while (waitpid(-1, &status, 0) > 0)
+	if (philo->meals_eaten >= philo->sim->required_meals)
 	{
-		if (WIFEXITED(status))
-		{
-			if (WEXITSTATUS(status) == 1)
-			{
-				i = 0;
-				while (i < sim->philo_count)
-					kill(sim->philo_pid[i++], SIGKILL);
-				break ;
-			}
-			if (WEXITSTATUS(status) == 0)
-				satisfied++;
-		}
+		child_cleanup(philo);
+		exit(0);
 	}
-	if (satisfied == sim->philo_count)
-		printf("%ld All philosophers are satisfied\n",
-			get_time_ms() - sim->start_time);
+	return (0);
+}
+
+int	check_death(t_philo *philo)
+{
+	if (get_time_ms() - philo->last_meal >= philo->sim->time_to_die)
+	{
+		print_status(philo, "died");
+		while (philo->holding_forks > 0)
+		{
+			sem_post(philo->sim->sem_forks);
+			philo->holding_forks--;
+		}
+		exit(1);
+	}
+	return (0);
 }
 
 void	child_cleanup(t_philo *philo)
 {
+	if (!philo)
+		return ;
 	sem_close(philo->sim->sem_print);
 	sem_close(philo->sim->sem_forks);
 }
@@ -50,9 +50,15 @@ void	cleanup(t_sim *sim)
 	if (!sim)
 		return ;
 	if (sim->sem_print)
+	{
 		sem_close(sim->sem_print);
+		sem_unlink("/sem_print");
+	}
 	if (sim->sem_forks)
+	{
 		sem_close(sim->sem_forks);
+		sem_unlink("/sem_forks");
+	}
 	free(sim->philo_pid);
 	free(sim->philos);
 	memset(sim, 0, sizeof(t_sim));

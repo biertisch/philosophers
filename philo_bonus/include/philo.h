@@ -15,7 +15,6 @@
 
 # include <fcntl.h> 
 # include <limits.h>
-# include <pthread.h>
 # include <signal.h>
 # include <semaphore.h>
 # include <stdio.h>
@@ -25,11 +24,12 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
-# define ERR_0 "Invalid input (invalid number of arguments)"
-# define ERR_1 "Invalid input (invalid character)"
-# define ERR_2 "Invalid input (invalid value)"
+# define ERR_0 "Invalid input: invalid number of arguments"
+# define ERR_1 "Invalid input: invalid character"
+# define ERR_2 "Invalid input: invalid value"
 # define ERR_3 "Failed to allocate memory"
 # define ERR_4 "Failed to open semaphore"
+# define ERR_5 "Failed to create child process"
 
 typedef struct s_sim	t_sim;
 
@@ -38,7 +38,7 @@ typedef struct s_philo
 	int			id;
 	int			meals_eaten;
 	long		last_meal;
-	int			holding_fork;
+	int			holding_forks;
 	t_sim		*sim;
 }				t_philo;
 
@@ -59,13 +59,14 @@ typedef struct s_sim
 int		validate_input(t_sim *sim, int argc, char **argv);
 long	ft_atol(const char *s);
 int		init_config(t_sim *sim, int argc, char **argv);
-int		init_semaphores(t_sim *sim);
 int		create_children(t_sim *sim);
-void	routine(t_philo *philo);
-void	print_status(t_philo *philo, char *msg);
-void	sleep_ms(long msec);
-long	get_time_ms(void);
 void	wait_for_children(t_sim *sim);
+void	routine(t_philo *philo);
+int		check_satisfaction(t_philo *philo);
+int		check_death(t_philo *philo);
+void	print_status(t_philo *philo, char *msg);
+long	get_time_ms(void);
+void	sleep_ms(t_philo *philo, long msec);
 void	child_cleanup(t_philo *philo);
 void	cleanup(t_sim *sim);
 int		error_exit(t_sim *sim, char *error_msg);
