@@ -30,10 +30,6 @@
 # define ERR_2 "Invalid input (invalid value)"
 # define ERR_3 "Failed to allocate memory"
 # define ERR_4 "Failed to open semaphore"
-# define ERR_5 "Failed to create child process"
-# define ERR_6 "Failed to create monitor thread"
-# define STATUS_DEAD 0
-# define STATUS_SATISFIED 1
 
 typedef struct s_sim	t_sim;
 
@@ -42,11 +38,7 @@ typedef struct s_philo
 	int			id;
 	int			meals_eaten;
 	long		last_meal;
-	int			dead;
-	int			satisfied;
-	pthread_t	monitor;
-	sem_t		*sem_meal;
-	sem_t		*sem_status;
+	int			holding_fork;
 	t_sim		*sim;
 }				t_philo;
 
@@ -62,8 +54,6 @@ typedef struct s_sim
 	t_philo	*philos;
 	sem_t	*sem_forks;
 	sem_t	*sem_print;
-	sem_t	**sem_meal;
-	sem_t	**sem_status;
 }			t_sim;
 
 int		validate_input(t_sim *sim, int argc, char **argv);
@@ -72,9 +62,6 @@ int		init_config(t_sim *sim, int argc, char **argv);
 int		init_semaphores(t_sim *sim);
 int		create_children(t_sim *sim);
 void	routine(t_philo *philo);
-int		create_monitor_thread(t_philo *philo);
-int		get_status(t_philo *philo, int type);
-void	set_status(t_philo *philo, int type);
 void	print_status(t_philo *philo, char *msg);
 void	sleep_ms(long msec);
 long	get_time_ms(void);

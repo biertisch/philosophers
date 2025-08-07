@@ -20,10 +20,7 @@ static void	launch_philo(t_sim *sim, int i)
 	philo->id = i + 1;
 	philo->meals_eaten = 0;
 	philo->last_meal = sim->start_time;
-	philo->dead = 0;
-	philo->satisfied = 0;
-	philo->sem_meal = sim->sem_meal[i];
-	philo->sem_status = sim->sem_status[i];
+	philo->holding_fork = 0;
 	philo->sim = sim;
 	routine(philo);
 	exit(2);
@@ -52,9 +49,7 @@ static int	allocate_memory(t_sim *sim)
 {
 	sim->philo_pid = malloc(sizeof(pid_t) * sim->philo_count);
 	sim->philos = malloc(sizeof(t_philo) * sim->philo_count);
-	sim->sem_meal = malloc(sizeof(sem_t *) * sim->philo_count);
-	sim->sem_status = malloc(sizeof(sem_t *) * sim->philo_count);
-	if (!sim->philo_pid || !sim->philos || !sim->sem_meal || !sim->sem_status)
+	if (!sim->philo_pid || !sim->philos)
 		return (0);
 	return (1);
 }

@@ -21,13 +21,13 @@ long	get_time_ms(void)
 	return (tv.tv_sec * 1000L + tv.tv_usec / 1000);
 }
 
-void	sleep_ms(long msec)
+void	sleep_ms(t_philo *philo, long msec)
 {
 	long	start;
 
 	if (msec <= 0)
 		return ;
 	start = get_time_ms();
-	while (get_time_ms() - start < msec)
+	while (!check_death(philo) && get_time_ms() - start < msec)
 		usleep(500);
 }

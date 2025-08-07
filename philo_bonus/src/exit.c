@@ -41,41 +41,20 @@ void	wait_for_children(t_sim *sim)
 
 void	child_cleanup(t_philo *philo)
 {
-	int	i;
-
-	i = 0;
-	while (i < philo->sim->philo_count)
-	{
-		sem_close(philo->sim->sem_meal[i]);
-		sem_close(philo->sim->sem_status[i++]);
-	}
 	sem_close(philo->sim->sem_print);
 	sem_close(philo->sim->sem_forks);
 }
 
 void	cleanup(t_sim *sim)
 {
-	int	i;
-
 	if (!sim)
 		return ;
-	i = 0; 
-	while (i < sim->philo_count)
-	{
-		if (sim->sem_meal && sim->sem_meal[i])
-			sem_close(sim->sem_meal[i]);
-		if (sim->sem_status && sim->sem_status[i])
-			sem_close(sim->sem_status[i]);
-		i++;
-    }
 	if (sim->sem_print)
 		sem_close(sim->sem_print);
 	if (sim->sem_forks)
 		sem_close(sim->sem_forks);
 	free(sim->philo_pid);
 	free(sim->philos);
-	free(sim->sem_meal);
-	free(sim->sem_status);
 	memset(sim, 0, sizeof(t_sim));
 }
 
