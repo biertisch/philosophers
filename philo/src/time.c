@@ -36,7 +36,7 @@ void	sleep_ms(t_sim *sim, long msec)
 	{
 		if (now - last_check >= 10)
 		{
-			if (stop_sim(sim))
+			if (stop_simulation(sim))
 				break ;
 			last_check = now;
 		}

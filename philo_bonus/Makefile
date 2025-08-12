@@ -2,20 +2,19 @@ NAME = philo_bonus
 
 SRC_DIR = src/
 SRC = $(addprefix $(SRC_DIR),\
-		exit.c init.c main.c print.c routine.c time.c validate.c)
+		exit.c init.c main.c monitor.c print.c routine.c time.c validate.c)
 
 OBJ_DIR = obj/
 OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SRC))
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -g -Iinclude -pthread
-LFLAGS = -pthread
+CFLAGS = -Wall -Werror -Wextra -g -Iinclude
 RM = rm -rf
 
 all: $(NAME)
 
 $(NAME): $(OBJ_DIR) $(OBJ)
-	$(CC) $(LFLAGS) $(OBJ) -o $@
+	$(CC) $(OBJ) -o $@
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)

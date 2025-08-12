@@ -58,8 +58,8 @@ typedef struct s_sim
 
 int		validate_input(t_sim *sim, int argc, char **argv);
 long	ft_atol(const char *s);
-int		init_config(t_sim *sim, int argc, char **argv);
-int		create_children(t_sim *sim);
+void	init_config(t_sim *sim, int argc, char **argv);
+void	create_children(t_sim *sim);
 void	wait_for_children(t_sim *sim);
 void	routine(t_philo *philo);
 int		check_satisfaction(t_philo *philo);

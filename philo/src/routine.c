@@ -18,21 +18,30 @@ static void	think_until_hungry(t_philo *philo)
 
 	print_status(philo, "is thinking");
 	threshold = philo->sim->time_to_die * 0.75;
-	while (!stop_sim(philo->sim)
+	while (!stop_simulation(philo->sim)
 		&& (get_time_ms() - philo->last_meal < threshold))
 		sleep_ms(philo->sim, 1);
 }
 
-static void	eat(t_philo *philo)
+static int	eat(t_philo *philo)
 {
+	int	satisfied;
+
+	satisfied = 0;
 	pthread_mutex_lock(&philo->meal_lock);
 	philo->last_meal = get_time_ms();
-	philo->meals_eaten++;
 	pthread_mutex_unlock(&philo->meal_lock);
 	print_status(philo, "is eating");
 	sleep_ms(philo->sim, philo->sim->time_to_eat);
+	pthread_mutex_lock(&philo->meal_lock);
+	philo->meals_eaten++;
+	if (philo->sim->required_meals != -1
+		&& philo->meals_eaten >= philo->sim->required_meals)
+		satisfied = 1;
+	pthread_mutex_unlock(&philo->meal_lock);
 	pthread_mutex_unlock(philo->first_fork);
 	pthread_mutex_unlock(philo->second_fork);
+	return (satisfied);
 }
 
 static int	take_forks(t_philo *philo)
@@ -42,6 +51,7 @@ static int	take_forks(t_philo *philo)
 	if (philo->first_fork == philo->second_fork)
 	{
 		pthread_mutex_unlock(philo->first_fork);
+		sleep_ms(philo->sim, philo->sim->time_to_die + 1);
 		return (0);
 	}
 	pthread_mutex_lock(philo->second_fork);
@@ -63,11 +73,12 @@ void	*routine(void *arg)
 
 	philo = (t_philo *)arg;
 	wait_to_be_served(philo);
-	while (!stop_sim(philo->sim))
+	while (!stop_simulation(philo->sim))
 	{
 		if (!take_forks(philo))
 			break ;
-		eat(philo);
+		if (eat(philo))
+			break ;
 		print_status(philo, "is sleeping");
 		sleep_ms(philo->sim, philo->sim->time_to_sleep);
 		think_until_hungry(philo);

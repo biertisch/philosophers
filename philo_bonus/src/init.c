@@ -26,7 +26,7 @@ static void	launch_philo(t_sim *sim, int i)
 	exit(2);
 }
 
-int	create_children(t_sim *sim)
+void	create_children(t_sim *sim)
 {
 	int		i;
 	pid_t	pid;
@@ -36,13 +36,12 @@ int	create_children(t_sim *sim)
 	{
 		pid = fork();
 		if (pid == -1)
-			return (error_exit(sim, ERR_5));
+			error_exit(sim, ERR_5);
 		else if (pid == 0)
 			launch_philo(sim, i);
 		sim->philo_pid[i] = pid;
 		i++;
 	}
-	return (1);
 }
 
 static int	init_semaphores(t_sim *sim)
@@ -68,19 +67,18 @@ static int	allocate_memory(t_sim *sim)
 	return (1);
 }
 
-int	init_config(t_sim *sim, int argc, char **argv)
+void	init_config(t_sim *sim, int argc, char **argv)
 {
 	sim->philo_count = ft_atol(argv[1]);
 	sim->time_to_die = ft_atol(argv[2]);
 	sim->time_to_eat = ft_atol(argv[3]);
 	sim->time_to_sleep = ft_atol(argv[4]);
-	sim->start_time = get_time_ms();
 	sim->required_meals = -1;
 	if (argc == 6)
 		sim->required_meals = ft_atol(argv[5]);
+	sim->start_time = get_time_ms();
 	if (!allocate_memory(sim))
-		return (error_exit(sim, ERR_3));
+		error_exit(sim, ERR_3);
 	if (!init_semaphores(sim))
-		return (error_exit(sim, ERR_4));
-	return (1);
+		error_exit(sim, ERR_4);
 }

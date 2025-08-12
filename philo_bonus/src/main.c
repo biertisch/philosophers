@@ -12,35 +12,6 @@
 
 #include "../include/philo.h"
 
-void	wait_for_children(t_sim *sim)
-{
-	int	status;
-	int	satisfied;
-	int	i;
-
-	satisfied = 0;
-	while (waitpid(-1, &status, 0) > 0)
-	{
-		if (WIFEXITED(status))
-		{
-			if (WEXITSTATUS(status) == 1)
-			{
-				i = 0;
-				while (i < sim->philo_count)
-					kill(sim->philo_pid[i++], SIGKILL);
-				while (waitpid(-1, NULL, 0) > 0)
-					;
-				return ;
-			}
-			if (WEXITSTATUS(status) == 0)
-				satisfied++;
-		}
-	}
-	if (satisfied == sim->philo_count)
-		printf("%ld All philosophers are satisfied\n",
-			get_time_ms() - sim->start_time);
-}
-
 int	main(int argc, char **argv)
 {
 	t_sim	sim;
@@ -52,5 +23,5 @@ int	main(int argc, char **argv)
 	wait_for_children(&sim);
 	cleanup(&sim);
 	printf("End of simulation\n");
-	return (0);
+	return (EXIT_SUCCESS);
 }

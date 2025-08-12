@@ -12,6 +12,13 @@
 
 #include "../include/philo.h"
 
+static void	launch_simulation(t_sim *sim)
+{
+	pthread_mutex_lock(&sim->sim_lock);
+	sim->sim_over = 0;
+	pthread_mutex_unlock(&sim->sim_lock);
+}
+
 int	main(int argc, char **argv)
 {
 	t_sim	sim;
@@ -21,14 +28,10 @@ int	main(int argc, char **argv)
 		return (EXIT_FAILURE);
 	if (!init_config(&sim, argc, argv))
 		return (EXIT_FAILURE);
-	if (!init_forks(&sim))
-		return (EXIT_FAILURE);
 	if (!init_philos(&sim))
 		return (EXIT_FAILURE);
-	pthread_mutex_lock(&sim.sim_lock);
-	sim.sim_over = 0;
-	pthread_mutex_unlock(&sim.sim_lock);
-	while (!stop_sim(&sim))
+	launch_simulation(&sim);
+	while (!stop_simulation(&sim))
 	{
 		monitor(&sim);
 		usleep(500);

@@ -12,18 +12,16 @@
 
 #include "../include/philo.h"
 
-static int	ft_strncmp(const char *s1, const char *s2, size_t n)
+static int	match(const char *s1, const char *s2)
 {
-	size_t	i;
-
-	i = 0;
-	while (i < n && (s1[i] || s2[i]))
+	while (*s1 && *s1 == *s2)
 	{
-		if (s1[i] != s2[i])
-			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-		i++;
+		s1++;
+		s2++;
 	}
-	return (0);
+	if (*s1 || *s2)
+		return (0);
+	return (1);
 }
 
 void	print_status(t_philo *philo, char *msg)
@@ -33,6 +31,6 @@ void	print_status(t_philo *philo, char *msg)
 	sem_wait(philo->sim->sem_print);
 	timestamp = get_time_ms() - philo->sim->start_time;
 	printf("%ld %d %s\n", timestamp, philo->id, msg);
-	if (ft_strncmp(msg, "died", 4) != 0)
+	if (!match(msg, "died"))
 		sem_post(philo->sim->sem_print);
 }

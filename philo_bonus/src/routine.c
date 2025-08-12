@@ -26,9 +26,9 @@ static void	think_until_hungry(t_philo *philo)
 static void	eat(t_philo *philo)
 {
 	philo->last_meal = get_time_ms();
-	philo->meals_eaten++;
 	print_status(philo, "is eating");
 	sleep_ms(philo, philo->sim->time_to_eat);
+	philo->meals_eaten++;
 	while (philo->holding_forks > 0)
 	{
 		sem_post(philo->sim->sem_forks);
@@ -68,7 +68,7 @@ void	routine(t_philo *philo)
 	{
 		take_forks(philo);
 		eat(philo);
-		if (philo->sim->required_meals > 0)
+		if (philo->sim->required_meals != -1)
 			check_satisfaction(philo);
 		print_status(philo, "is sleeping");
 		sleep_ms(philo, philo->sim->time_to_sleep);

@@ -12,7 +12,7 @@
 
 #include "../include/philo.h"
 
-int	stop_sim(t_sim *sim)
+int	stop_simulation(t_sim *sim)
 {
 	int	status;
 
@@ -42,8 +42,7 @@ static void	check_meal_completion(t_sim *sim)
 	if (satisfied == sim->philo_count)
 	{
 		pthread_mutex_lock(&sim->print_lock);
-		printf("%ld The philosophers are all satisfied\n",
-			now - sim->start_time);
+		printf("%ld All philosophers are satisfied\n", now - sim->start_time);
 		pthread_mutex_unlock(&sim->print_lock);
 		pthread_mutex_lock(&sim->sim_lock);
 		sim->sim_over = 1;
@@ -64,10 +63,12 @@ void	monitor(t_sim *sim)
 		if (now - sim->philos[i].last_meal >= sim->time_to_die)
 		{
 			pthread_mutex_unlock(&sim->philos[i].meal_lock);
-			print_status(&sim->philos[i], "died");
 			pthread_mutex_lock(&sim->sim_lock);
 			sim->sim_over = 1;
 			pthread_mutex_unlock(&sim->sim_lock);
+			pthread_mutex_lock(&sim->print_lock);
+			printf("%ld %d died\n", now - sim->start_time, sim->philos[i].id);
+			pthread_mutex_unlock(&sim->print_lock);
 			return ;
 		}
 		pthread_mutex_unlock(&sim->philos[i].meal_lock);

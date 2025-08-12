@@ -16,11 +16,11 @@ void	print_status(t_philo *philo, char *msg)
 {
 	long	timestamp;
 
-	if (!stop_sim(philo->sim))
+	pthread_mutex_lock(&philo->sim->print_lock);
+	if (!stop_simulation(philo->sim))
 	{
-		pthread_mutex_lock(&philo->sim->print_lock);
 		timestamp = get_time_ms() - philo->sim->start_time;
 		printf("%ld %d %s\n", timestamp, philo->id, msg);
-		pthread_mutex_unlock(&philo->sim->print_lock);
 	}
+	pthread_mutex_unlock(&philo->sim->print_lock);
 }

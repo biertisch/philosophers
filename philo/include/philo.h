@@ -21,16 +21,12 @@
 # include <sys/time.h>
 # include <unistd.h>
 
-# define ERR_0 "Invalid input (invalid number of arguments)"
-# define ERR_1 "Invalid input (invalid character)"
-# define ERR_2 "Invalid input (invalid value)"
-# define ERR_3 "Failed to initialize configuration (failed to initialize mutex)"
-# define ERR_4 "Failed to initialize configuration (failed to get time)"
-# define ERR_5 "Failed to initialize forks (failed to allocate memory)"
-# define ERR_6 "Failed to initialize forks (failed to initialize mutex)"
-# define ERR_7 "Failed to initialize philosophers (failed to allocate memory)"
-# define ERR_8 "Failed to initialize philosophers (failed to initialize mutex)"
-# define ERR_9 "Failed to initialize philosophers (failed to create thread)"
+# define ERR_0 "Invalid input: invalid number of arguments"
+# define ERR_1 "Invalid input: invalid character"
+# define ERR_2 "Invalid input: invalid value"
+# define ERR_3 "Failed to allocate memory"
+# define ERR_4 "Failed to initialize mutex"
+# define ERR_5 "Failed to create thread"
 
 typedef struct s_sim	t_sim;
 
@@ -69,7 +65,6 @@ typedef struct s_sim
 int		validate_input(t_sim *sim, int argc, char **argv);
 long	ft_atol(const char *s);
 int		init_config(t_sim *sim, int argc, char **argv);
-int		init_forks(t_sim *sim);
 int		init_philos(t_sim *sim);
 void	*routine(void *arg);
 void	monitor(t_sim *sim);
@@ -77,7 +72,7 @@ void	print_status(t_philo *philo, char *msg);
 long	get_time_ms(void);
 void	sleep_ms(t_sim *sim, long msec);
 int		error_exit(t_sim *sim, char *error_msg);
-int		stop_sim(t_sim *sim);
+int		stop_simulation(t_sim *sim);
 void	cleanup(t_sim *sim);
 
 #endif

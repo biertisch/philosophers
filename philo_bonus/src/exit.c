@@ -12,31 +12,6 @@
 
 #include "../include/philo.h"
 
-int	check_satisfaction(t_philo *philo)
-{
-	if (philo->meals_eaten >= philo->sim->required_meals)
-	{
-		child_cleanup(philo);
-		exit(0);
-	}
-	return (0);
-}
-
-int	check_death(t_philo *philo)
-{
-	if (get_time_ms() - philo->last_meal >= philo->sim->time_to_die)
-	{
-		print_status(philo, "died");
-		while (philo->holding_forks > 0)
-		{
-			sem_post(philo->sim->sem_forks);
-			philo->holding_forks--;
-		}
-		exit(1);
-	}
-	return (0);
-}
-
 void	child_cleanup(t_philo *philo)
 {
 	if (!philo)
@@ -78,5 +53,5 @@ int	error_exit(t_sim *sim, char *error_msg)
 		write(2, "\n", 1);
 	}
 	cleanup(sim);
-	exit(1);
+	exit(EXIT_FAILURE);
 }

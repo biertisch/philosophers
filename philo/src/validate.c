@@ -63,7 +63,7 @@ int	validate_input(t_sim *sim, int argc, char **argv)
 			return (error_exit(sim, ERR_2));
 		else if ((i >= 2 && i <= 4) && (tmp < 60 || tmp > INT_MAX))
 			return (error_exit(sim, ERR_2));
-		else if (i == 5 && (tmp < 1 || tmp > INT_MAX))
+		else if (i == 5 && (tmp < 0 || tmp > INT_MAX))
 			return (error_exit(sim, ERR_2));
 		i++;
 	}
