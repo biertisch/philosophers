@@ -1,18 +1,21 @@
-NAME = philo
+NAME		=	philo
 
-SRC_DIR = src/
-SRC = $(addprefix $(SRC_DIR),\
-		exit.c init.c main.c monitor.c print.c routine.c time.c	validate.c)
+SRC_FILES	=	exit init main monitor print routine time validate
 
-OBJ_DIR = obj/
-OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SRC))
+SRC_DIR		=	src/
+OBJ_DIR		=	obj/
+INC_DIR		=	include/
 
-CC = cc
-CFLAGS = -Wall -Werror -Wextra -g -Iinclude -pthread
-LFLAGS = -pthread
-RM = rm -rf
+SRC			=	$(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES)))
+OBJ         =	$(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_FILES)))
+
+CC			=	cc
+CFLAGS		=	-Wall -Werror -Wextra -g -I$(INC_DIR) -pthread
+LFLAGS		=	-pthread
+RM			=	rm -rf
 
 all: $(NAME)
+	@cat ../banner.txt
 
 $(NAME): $(OBJ_DIR) $(OBJ)
 	$(CC) $(LFLAGS) $(OBJ) -o $@
@@ -20,7 +23,7 @@ $(NAME): $(OBJ_DIR) $(OBJ)
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c 
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
