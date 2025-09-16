@@ -17,19 +17,25 @@ all: $(NAME)
 	@cat ../banner.txt
 
 $(NAME): $(OBJ_DIR) $(OBJ)
-	$(CC) $(OBJ) -o $@
+	@echo "Linking executable..."
+	@$(CC) $(OBJ) -o $@
 
 $(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+	@mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c compile_message
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+compile_message:
+	@echo "Compiling object files..."
 
 clean:
-	$(RM) $(OBJ_DIR)
+	@echo "Removing object files..."
+	@$(RM) $(OBJ_DIR)
 
 fclean: clean
-	$(RM) $(NAME)
+	@echo "Removing executable..."
+	@$(RM) $(NAME)
 
 re: fclean all
 
