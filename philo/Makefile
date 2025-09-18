@@ -14,21 +14,26 @@ CFLAGS		=	-Wall -Werror -Wextra -g -I$(INC_DIR) -pthread
 LFLAGS		=	-pthread
 RM			=	rm -rf
 
+SENTINEL	=	$(OBJ_DIR).compiled
+
 all: $(NAME)
 	@cat ../banner.txt
 
-$(NAME): $(OBJ_DIR) $(OBJ)
+$(NAME): $(OBJ)
 	@echo "Linking executable..."
 	@$(CC) $(LFLAGS) $(OBJ) -o $@
+
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c compile_message
-	@$(CC) $(CFLAGS) -c $< -o $@
+$(OBJ): $(SENTINEL)
 
-compile_message:
+$(SENTINEL):
 	@echo "Compiling object files..."
+	@touch $@
 
 clean:
 	@echo "Removing object files..."
