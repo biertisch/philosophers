@@ -69,8 +69,8 @@ This problem illustrates the challenges of managing shared resources in concurre
 * make
 
 ```
-cd philo && make		# threads version
-cd philo_bonus & make	# processes version
+cd philo && make		# mandatory
+cd philo_bonus & make	# bonus
 ```
 
 ---
