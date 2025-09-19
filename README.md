@@ -69,6 +69,8 @@ This problem illustrates the challenges of managing shared resources in concurre
 * make
 
 ```
+git clone https://github.com/biertisch/philosophers.git
+cd philosophers
 cd philo && make		# mandatory
 cd philo_bonus & make	# bonus
 ```
