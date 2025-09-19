@@ -62,22 +62,22 @@ This problem illustrates the challenges of managing shared resources in concurre
 * Think until hungry: after eating and sleeping, philosophers delay picking up forks until reaching a hunger threshold (`time_to_die * 0.75`).
 
 ---
-### Compilation & Usage
+### Installation
 
-**Requirements:** GCC, make
+#### Requirements
+* GCC
+* make
 
-**To compile:**
 ```
 cd philo && make		# threads version
 cd philo_bonus & make	# processes version
 ```
 
-**To execute:**
+---
+### Usage
 ```
-./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]
-```
-```
-./philo_bonus number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]
+./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]		# mandatory
+./philo_bonus number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]	# bonus
 ```
 
 Example:
