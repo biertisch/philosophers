@@ -64,9 +64,7 @@ This problem illustrates the challenges of managing shared resources in concurre
 ---
 ### Installation
 
-#### Requirements
-* GCC
-* make
+**Requirements**: `gcc`, `make`
 
 ```
 git clone https://github.com/biertisch/philosophers.git
