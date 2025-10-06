@@ -6,7 +6,7 @@
 /*   By: beatde-a <beatde-a@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 16:48:18 by beatde-a          #+#    #+#             */
-/*   Updated: 2025/07/24 16:48:18 by beatde-a         ###   ########.fr       */
+/*   Updated: 2025/10/06 11:23:44 by beatde-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static void	launch_philo(t_sim *sim, int i)
 	philo->holding_forks = 0;
 	philo->sim = sim;
 	routine(philo);
+	cleanup(sim);
 	exit(2);
 }
 

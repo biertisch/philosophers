@@ -6,7 +6,7 @@
 /*   By: beatde-a <beatde-a@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 12:11:31 by beatde-a          #+#    #+#             */
-/*   Updated: 2025/08/12 12:11:31 by beatde-a         ###   ########.fr       */
+/*   Updated: 2025/10/06 11:24:21 by beatde-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	check_satisfaction(t_philo *philo)
 {
 	if (philo->meals_eaten >= philo->sim->required_meals)
 	{
-		child_cleanup(philo);
+		cleanup(philo->sim);
 		exit(0);
 	}
 	return (0);
@@ -32,7 +32,7 @@ int	check_death(t_philo *philo)
 			sem_post(philo->sim->sem_forks);
 			philo->holding_forks--;
 		}
-		child_cleanup(philo);
+		cleanup(philo->sim);
 		exit(1);
 	}
 	return (0);

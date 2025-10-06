@@ -6,14 +6,14 @@
 /*   By: beatde-a <beatde-a@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 15:46:07 by beatde-a          #+#    #+#             */
-/*   Updated: 2025/07/24 15:46:07 by beatde-a         ###   ########.fr       */
+/*   Updated: 2025/10/06 11:26:17 by beatde-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
-# include <fcntl.h> 
+# include <fcntl.h>
 # include <limits.h>
 # include <signal.h>
 # include <semaphore.h>
@@ -67,7 +67,6 @@ int		check_death(t_philo *philo);
 void	print_status(t_philo *philo, char *msg);
 long	get_time_ms(void);
 void	sleep_ms(t_philo *philo, long msec);
-void	child_cleanup(t_philo *philo);
 void	cleanup(t_sim *sim);
 int		error_exit(t_sim *sim, char *error_msg);
 

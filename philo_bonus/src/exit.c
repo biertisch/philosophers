@@ -6,19 +6,11 @@
 /*   By: beatde-a <beatde-a@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 20:17:08 by beatde-a          #+#    #+#             */
-/*   Updated: 2025/07/24 20:17:08 by beatde-a         ###   ########.fr       */
+/*   Updated: 2025/10/06 11:25:59 by beatde-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
-
-void	child_cleanup(t_philo *philo)
-{
-	if (!philo)
-		return ;
-	sem_close(philo->sim->sem_print);
-	sem_close(philo->sim->sem_forks);
-}
 
 void	cleanup(t_sim *sim)
 {
